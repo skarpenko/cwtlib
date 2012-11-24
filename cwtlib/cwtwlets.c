@@ -192,7 +192,7 @@ static double ESHANNONreal(double x, double a, double b)
       if ( a == 0.0 ) a = TINY;
       x = (x - b) / a;
       return c * sin(PI*Fb*x) * cos(2*PI*Fc*x) /
-             ( sqrt(Fb) * PI * x * exp(Fb*abs(x)) );
+             ( sqrt(Fb) * PI * x * exp(Fb*fabs(x)) );
 }
 
 /* Complex Shannon wavelet with exponential decay. Imaginary part */
@@ -206,7 +206,7 @@ static double ESHANNONimag(double x, double a, double b)
       if ( a == 0.0 ) a = TINY;
       x = (x - b) / a;
       return c * sin(PI*Fb*x) * sin(2*PI*Fc*x) /
-             ( sqrt(Fb) * PI * x * exp(Fb*abs(x)) );
+             ( sqrt(Fb) * PI * x * exp(Fb*fabs(x)) );
 }
 
 /* Gaussian 1 */

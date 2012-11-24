@@ -1,0 +1,11 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 50 "restart; with(inttra
+ns): # Paul wavelet of order m" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 5 "m:=1;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 48 "Pl:=2^m*I^m
+*m!*(1-I*t)^(-(m+1))/sqrt(Pi*(2*m)!);" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 19 "F:=fourier(Pl,t,w);" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}}{MARK "1 0 0" 4 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 
+1 }{PAGENUMBERS 0 1 2 33 1 1 }

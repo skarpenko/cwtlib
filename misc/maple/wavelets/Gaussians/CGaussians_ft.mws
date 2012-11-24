@@ -1,0 +1,13 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 
+0 0 1 2 2 2 2 2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 36 "restart; Digits:=30;
+ with(inttrans):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "assume(
+c>0); d:=1;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 29 "g:=exp(-I*(t
+/2))*exp(-t^2/2);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "gd:=c*
+diff(g, t$d);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "G:=fourier
+(gd, t, w);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}}{MARK "5 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 
+1 }{PAGENUMBERS 0 1 2 33 1 1 }

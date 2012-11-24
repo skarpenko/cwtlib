@@ -12,11 +12,11 @@
 
 /* CWT structure */
 typedef struct {
-        double amin, astep, amax;    /* Minimum and maximum scale */
-        double bstep;                /* Step of wavelet */
-        unsigned siglen;             /* Length of signal */
-        unsigned rows, cols;         /* Dimension of cwt */
-        double **cwt;                /* Wavelet coefficients */
+        double amin, astep, amax;  /* Minimum and maximum scale */
+        double bstep;              /* Step of wavelet */
+        unsigned long siglen;      /* Length of signal */
+        unsigned long rows, cols;  /* Dimension of cwt */
+        double **cwt;              /* Wavelet coefficients */
 } cwt_t;
 
 /* Wavelet function */
@@ -38,8 +38,8 @@ extern "C" {
 
       Returns 0 on success and 1 on error.
 */
-int cwt( double *s, unsigned n, double amin, double astep, double amax,
-         double bstep, unsigned ivalp, psi_t *psi, cwt_t *cwt );
+int cwt( double *s, unsigned long n, double amin, double astep, double amax,
+         double bstep, unsigned long ivalp, psi_t *psi, cwt_t *cwt );
 
 /*
      Frees cwt structure allocated by cwt()

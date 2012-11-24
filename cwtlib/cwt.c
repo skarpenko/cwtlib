@@ -5,6 +5,10 @@
  Date    : 01-04-2004
  Comments:
  History :
+   07-04-2004 Stepan V.Karpenko
+    Added minor precautions against possible bugs and incompatibility
+    in compilers.
+    Now actual maximum scale stores in cwt structure.
 ***********************************************************************/
 
 #include <math.h>
@@ -58,44 +62,45 @@ static void free_Matrixd(double **m, long nrl, long nrh, long ncl, long nch)
 
       Returns 0 on success and 1 on error.
 */
-int cwt( double *s, unsigned n, double amin, double astep, double amax,
-         double bstep, unsigned ivalp, psi_t *psi, cwt_t *cwt )
+int cwt( double *s, unsigned long n, double amin, double astep, double amax,
+         double bstep, unsigned long ivalp, psi_t *psi, cwt_t *cwt )
 {
         double a, b, i, istep;
-        long dx, dy;
+        unsigned long dx, dy;
 
         if( (amin > amax) || (amin <= 0.0) || (astep <= 0.0) ||
             (amax <= 0.0) || (bstep <= 0.0) || !ivalp )
                 return 1;
 
-        /* initialize cwt structure */
-        cwt->cols = (unsigned)( ceil((double)n / bstep) );
-        cwt->rows = (unsigned)((amax - amin)/astep + 1.0);
-        cwt->amin = amin;
-        cwt->astep = astep;
-        cwt->amax = amax;
-        cwt->bstep = bstep;
-        cwt->siglen = n;
+        /* initialize cwt dimension */
+        cwt->cols = (unsigned long)( ceil((double)n / bstep) );
+        cwt->rows = (unsigned long)((amax - amin)/astep + 1.0);
 
         cwt->cwt = Matrixd(0, cwt->rows-1, 0, cwt->cols-1);
         if(!cwt->cwt) return 1;
 
-        dy = 0;
         istep = 1.0 / (double)ivalp;
         /* Scales */
-        for (a = amin; a <= amax; a+=astep)
+        for (dy = 0, a = amin; dy < cwt->rows; dy++, a+=astep)
         {
            /* Offsets */
-            for ( (long)dx = (double)b = 0; b < (double)n; b+=bstep, dx++)
+            for ( dx = 0, b = 0.0; dx < cwt->cols; dx++, b+=bstep)
             {
                /* Perform convolution */
                 cwt->cwt[dy][dx] = 0.0;
                 for (i=0.0; i < n; i+=istep)
-                    cwt->cwt[dy][dx] += s[(long)i] * psi(i, a, b);
+                    cwt->cwt[dy][dx] += s[(unsigned long)i] * psi(i, a, b);
                 cwt->cwt[dy][dx] *= 1/(sqrt(a) * (double)ivalp);
             }
-            dy++;
         }
+
+        /* store transform info */
+        cwt->amin = amin;
+        cwt->astep = astep;
+        cwt->amax = a - astep; /* Last processed scale */
+        cwt->bstep = bstep;
+        cwt->siglen = n;
+
         return 0;
 }
 

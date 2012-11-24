@@ -5,13 +5,18 @@
  Date    : 01-04-2004
  Comments:
  History :
+   09-04-2004 Stepan V.Karpenko
+    Added cwtwlets[] array.
 ***********************************************************************/
 
 #include <math.h>
+#include <stdlib.h>
 #include "cwtwlets.h"
 
+/************************ PRIVATE ************************/
+
 /* Mexican Hat */
-double MEXHAT(double x, double a, double b)
+static double MEXHATreal(double x, double a, double b)
 {
       const double c = 0.86732507058407771; /* 2 / sqrt(3) * pi^(-1/4) */
 
@@ -22,7 +27,7 @@ double MEXHAT(double x, double a, double b)
 }
 
 /* Morlet real part */
-double MORLETreal(double x, double a, double b)
+static double MORLETreal(double x, double a, double b)
 {
       const double c = 2 * PI * 0.8;
       double x2;
@@ -34,7 +39,7 @@ double MORLETreal(double x, double a, double b)
 }
 
 /* Morlet imaginary part */
-double MORLETimag(double x, double a, double b)
+static double MORLETimag(double x, double a, double b)
 {
       const double c = 2 * PI * 0.8;
       double x2;
@@ -44,3 +49,13 @@ double MORLETimag(double x, double a, double b)
       x2 = x * x;
       return exp(-x2/2) * sin(c*x);
 }
+
+/************************ PUBLIC ************************/
+
+cwtwlet_t cwtwlets[] = {
+    { "MexHat", &MEXHATreal, NULL },
+    { "Morlet", &MORLETreal, &MORLETimag },
+
+    /* Last entry */
+    { "", NULL, NULL }
+};

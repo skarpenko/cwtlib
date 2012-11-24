@@ -5,6 +5,8 @@
  Date    : 01-04-2004
  Comments:
  History :
+   31-05-2004 Stepan V.Karpenko
+    Added support for optimized versions of cwt().
 ***********************************************************************/
 
 #include <math.h>
@@ -13,9 +15,24 @@
 #include "cwtwlets.h"
 #include "cwt.h"
 
-#define WAVELET cwtwlets[MEXHAT].real
+/* CWT version */
+/** #define NOOPT **/ /* Without optimization */
+/** #define OPT1 **/  /* Optimized version 1 */
+#define OPT2          /* Optimized version 2 */
 
-#define N 1024
+#ifdef OPT2
+  #define NPOINTS 60000 /* Points number for wavelet precompution */
+#endif
+
+
+#define WAVELET cwtwlets[MEXHAT]
+#define AMIN 1    /* A min  */
+#define ASTP 1    /* A step */
+#define AMAX 128  /* A max  */
+#define BSTP 1    /* B step */
+#define PREC 2    /* Precision */
+#define N 1024    /* Signal length */
+
 double s[N];
 
 clock_t msecs;
@@ -43,17 +60,26 @@ int main(int argc, char *argv[])
 
      printf("Performing wavelet transform...");
      msecs = clock();
-     if( cwt(s, N, 1, 1, 128, 1, 2, WAVELET, &wt) )
+    #ifdef NOOPT
+     if( cwt(s, N, AMIN, ASTP, AMAX, BSTP, PREC, WAVELET.real, &wt) )
+    #endif
+    #ifdef OPT1
+     if( cwto1(s, N, AMIN, ASTP, AMAX, BSTP, PREC, &WAVELET, REAL, &wt) )
+    #endif
+    #ifdef OPT2
+     if( cwto2(s, N, AMIN, ASTP, AMAX, BSTP, PREC, &WAVELET, REAL, NPOINTS, &wt) )
+    #endif
      {
          printf("error performing wavelet transform!\n");
          return 1;
      }
-     printf("Time elapsed: %u sec.\n", (clock()-msecs)/CLK_TCK);
+     printf("Elapsed time: %u sec.\n", (clock()-msecs)/CLK_TCK);
 
      printf("\nTransform info:\nAmin\t\t= %f\nAstep\t\t= %f\nAmax\t\t= %f\n",
         wt.amin, wt.astep, wt.amax);
      printf("Bstep\t\t= %f\nSignal length\t= %u\n", wt.bstep, wt.siglen);
-     printf("CWT array dimension: %ux%u\n\n", wt.rows, wt.cols);
+     printf("CWT array dimension: %ux%u\n", wt.rows, wt.cols);
+     printf("Wavelet: %s\n\n", wt.wname);
 
      printf("Storing data.\n");
      for(i=0; i<wt.rows; i++) {

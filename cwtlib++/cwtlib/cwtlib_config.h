@@ -47,12 +47,13 @@ using std::string;
 #define TINY 1E-200
 
 // constants declarations
-#ifndef PI
-  #define PI  3.141592653589793238462643383279502884197
-#endif
+#define CWT_PI      3.141592653589793238462643383279502884197 /* PI         */
+#define CWT_2PI     6.283185307179586476925286766559005768394 /* 2*PI       */
+#define CWT_SQRTPI  1.772453850905516027298167483341145182797 /* sqrt(PI)   */
+#define CWT_SQRT2PI 2.506628274631000502415765284811045253006 /* sqrt(2*PI) */
 
-#ifndef PI2
-  #define PI2  6.283185307179586476925286766559005768394
+#ifndef PI
+#  define PI CWT_PI
 #endif
 
 // cwtlib namespace definitions

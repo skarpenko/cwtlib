@@ -65,7 +65,7 @@ static void fft(cwt_float_t *re, cwt_float_t *im, cwt_uint_t n, int isign)
     k=n;
     while (k>>=1) {
         le1 = (le=1<<l++) >> 1;
-        wtr = PI / (cwt_float_t)le1;
+        wtr = CWT_PI / (cwt_float_t)le1;
         wpr = cos(wtr); wpi = -isign*sin(wtr);
         wr = 1.0;       wi = 0.0;
         for (j=0; j<le1; j++) {
@@ -524,7 +524,7 @@ WTransform* CWTalgorithm::cwtft(const Signal& s, const RangeFunctor& Scales,
     cwt_float_t a, w, W_re, W_im;
     // precomputed values
     cwt_float_t sqrt_a_n;
-    cwt_float_t twoPIn = PI2 / (cwt_float_t)n;
+    cwt_float_t twoPIn = CWT_2PI / (cwt_float_t)n;
 
 
     // check arguments

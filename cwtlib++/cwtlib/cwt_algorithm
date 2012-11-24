@@ -48,7 +48,7 @@ class CWTalgorithm {
     //   MotherWavelet  -  mother wavelet used in computations;
     //   ivalp          -  used to add additional time steps when computing
     //                     wavelet (affects precision);
-    //   name           -  name which will be assigned to result object.
+    //   Name           -  name which will be assigned to result object.
     //
     // Returns WTransform obect as a result.
     static WTransform* cwt(const Signal& s, const RangeFunctor& Scales,
@@ -66,7 +66,7 @@ class CWTalgorithm {
     //   MotherWavelet  -  mother wavelet used in computations;
     //   ivalp          -  used to add additional time steps when computing
     //                     wavelet (affects precision);
-    //   name           -  name which will be assigned to result object.
+    //   Name           -  name which will be assigned to result object.
     //
     // Returns WTransform obect as a result.
     static WTransform* cwto1(const Signal& s, const RangeFunctor& Scales,
@@ -87,7 +87,7 @@ class CWTalgorithm {
     //                     wavelet (affects precision);
     //   npoints        -  number of wavelet values for precompution
     //                     (greater value - higher precision);
-    //   name           -  name which will be assigned to result object.
+    //   Name           -  name which will be assigned to result object.
     //
     // Returns WTransform obect as a result.
     static WTransform* cwto2(const Signal& s, const RangeFunctor& Scales,
@@ -108,7 +108,7 @@ class CWTalgorithm {
     //                     wavelet (affects precision);
     //   npoints        -  number of wavelet values for precompution
     //                     (greater value - higher precision);
-    //   name           -  name which will be assigned to result object.
+    //   Name           -  name which will be assigned to result object.
     //
     // Returns WTransform obect as a result.
     static WTransform* cwto3(const Signal& s, const RangeFunctor& Scales,
@@ -122,7 +122,7 @@ class CWTalgorithm {
     //   Scales         -  functor which provides scales sequence for
     //                     transform;
     //   MotherWavelet  -  mother wavelet used in computations;
-    //   name           -  name which will be assigned to result object.
+    //   Name           -  name which will be assigned to result object.
     //
     // Returns WTransform obect as a result.
     static WTransform* cwtft(const Signal& s, const RangeFunctor& Scales,

@@ -125,7 +125,7 @@ cwt_float_t WTransform::mag(cwt_uint_t row, cwt_uint_t col) const throw(out_of_r
         throw CWTLIB_EXCEPTION_OUT_OF_RANGE();
 
     cwt_uint_t idx = row*_cols + col;
-    return sqrt(_re[idx]*_re[idx] * _im[idx]*_im[idx]);
+    return sqrt(_re[idx]*_re[idx] + _im[idx]*_im[idx]);
 }
 
 cwt_float_t WTransform::ang(cwt_uint_t row, cwt_uint_t col) const throw(out_of_range)

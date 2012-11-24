@@ -62,8 +62,29 @@ class Wavelet {
 };
 
 
+// Mexican Hat wavelet
+class MexicanHat: public Wavelet {
+  public:
+    // Construct Mexican Hat wavelet
+    MexicanHat();
+
+    MexicanHat(const MexicanHat& Src);
+
+    virtual cwt_float_t reT(cwt_float_t t) const;
+    virtual cwt_float_t imT(cwt_float_t t) const;
+    virtual cwt_float_t reF(cwt_float_t w) const;
+    virtual cwt_float_t imF(cwt_float_t w) const;
+
+    virtual cwt_float_t cFreq() const;
+    virtual cwt_float_t effL() const;
+    virtual cwt_float_t effR() const;
+
+    virtual Wavelet* clone() const;
+};
+
+
 // Complex Morlet wavelet
-class CMorlet: public Wavelet {
+class ComplexMorlet: public Wavelet {
   private:
     cwt_float_t _fc;    // central frequency
     cwt_float_t _fb;    // bandwidth parameter
@@ -75,13 +96,13 @@ class CMorlet: public Wavelet {
   public:
     // Construct Complex Morlet wavelet with default
     // parameters.
-    CMorlet();
+    ComplexMorlet();
 
     // Construct Complex Morlet wavelet with user-provided
     // parameters.
-    CMorlet(cwt_float_t Fc, cwt_float_t Fb);
+    ComplexMorlet(cwt_float_t Fc, cwt_float_t Fb);
 
-    CMorlet(const CMorlet& Src);
+    ComplexMorlet(const ComplexMorlet& Src);
 
     virtual cwt_float_t reT(cwt_float_t t) const;
     virtual cwt_float_t imT(cwt_float_t t) const;

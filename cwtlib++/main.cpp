@@ -40,14 +40,14 @@ enum { Real, Imag, Magn, Angl };  // WT transform parts
 #define CWTVER 3
 
 // WT computation params
-#define WAVELET CMorlet()  /* Mother wavelet */
-#define PART Magn          /* Complex part of the transform to save */
-#define AMIN 1             /* A min  */
-#define ASTP 1             /* A step */
-#define AMAX 128           /* A max  */
-#define PREC 4             /* Precision */
-#define NPOINTS 60000      /* Points number for wavelet precompution */
-#define N 1024             /* Signal length for reading from a file */
+#define WAVELET ComplexMorlet()  /* Mother wavelet */
+#define PART Magn                /* Complex part of the transform to save */
+#define AMIN 1                   /* A min  */
+#define ASTP 1                   /* A step */
+#define AMAX 128                 /* A max  */
+#define PREC 4                   /* Precision */
+#define NPOINTS 60000            /* Points number for wavelet precompution */
+#define N 1024                   /* Signal length for reading from a file */
 
 // used for time tracking
 clock_t msecs;

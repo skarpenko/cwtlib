@@ -47,39 +47,98 @@ const string& Wavelet::name() const
     return _name;
 }
 
+// ==================== Mexican Hat wavelet ================================
+
+// default params
+static const char         MexicanHat_Name[] = "MexicanHat";
+static const cwt_float_t  MexicanHat_Fc     = (1.0 / CWT_PI);
+// L2 norm. c = 2 / ( sqrt(3) * pi^(1/4) )
+static const cwt_float_t  MexicanHat_c      = 0.8673250705840776;
+static const cwt_float_t  MexicanHat_r      = 5.0;
+
+MexicanHat::MexicanHat()
+  : Wavelet(MexicanHat_Name)
+{ }
+
+MexicanHat::MexicanHat(const MexicanHat& Src)
+  : Wavelet(Src)
+{ }
+
+cwt_float_t MexicanHat::reT(cwt_float_t t) const
+{
+    t = t * t;
+    return MexicanHat_c * (1.0 - t) * exp(-t / 2.0);
+}
+
+cwt_float_t MexicanHat::imT(cwt_float_t t) const
+{
+    return 0.0;
+}
+
+cwt_float_t MexicanHat::reF(cwt_float_t w) const
+{
+    w = w * w;
+    return MexicanHat_c * CWT_SQRT2PI * w * exp(-w / 2.0);
+}
+
+cwt_float_t MexicanHat::imF(cwt_float_t w) const
+{
+    return 0.0;
+}
+
+cwt_float_t MexicanHat::cFreq() const
+{
+    return MexicanHat_Fc;
+}
+
+cwt_float_t MexicanHat::effL() const
+{
+    return -MexicanHat_r;
+}
+
+cwt_float_t MexicanHat::effR() const
+{
+    return +MexicanHat_c;
+}
+
+Wavelet* MexicanHat::clone() const
+{
+    return new MexicanHat(*this);
+}
+
 // ==================== Complex Morlet wavelet ================================
 
 // default params
-static const char         CMorlet_Name[] = "ComplexMorlet";
-static const cwt_float_t  CMorlet_Fc     = 0.8;
-static const cwt_float_t  CMorlet_Fb     = 2.0;
+static const char         ComplexMorlet_Name[] = "ComplexMorlet";
+static const cwt_float_t  ComplexMorlet_Fc     = 0.8;
+static const cwt_float_t  ComplexMorlet_Fb     = 2.0;
 
-CMorlet::CMorlet()
-  : Wavelet(CMorlet_Name)
+ComplexMorlet::ComplexMorlet()
+  : Wavelet(ComplexMorlet_Name)
 {
-    _fc = CMorlet_Fc;
-    _fb = CMorlet_Fb;
+    _fc = ComplexMorlet_Fc;
+    _fb = ComplexMorlet_Fb;
     // compute L2 norm ...
-    _c = 1.0 / sqrt(PI * _fb);
+    _c = 1.0 / sqrt(CWT_PI * _fb);
     // ... and effective support boundary values
     _effl = -2.0*_fb;
     _effr = +2.0*_fb;
 }
 
-CMorlet::CMorlet(cwt_float_t Fc, cwt_float_t Fb)
-  : Wavelet(CMorlet_Name)
+ComplexMorlet::ComplexMorlet(cwt_float_t Fc, cwt_float_t Fb)
+  : Wavelet(ComplexMorlet_Name)
 {
     if (Fc <= 0.0 || Fb <= 0.0)
         throw CWTLIB_EXCEPTION_INVALID_ARG();
 
     _fc = Fc;
     _fb = Fb;
-    _c = 1.0 / sqrt(PI * _fb);
+    _c = 1.0 / sqrt(CWT_PI * _fb);
     _effl = -2.0*_fb;
     _effr = +2.0*_fb;
 }
 
-CMorlet::CMorlet(const CMorlet& Src)
+ComplexMorlet::ComplexMorlet(const ComplexMorlet& Src)
   : Wavelet(Src)
 {
     _fc = Src._fc;
@@ -89,52 +148,52 @@ CMorlet::CMorlet(const CMorlet& Src)
     _effr = Src._effr;
 }
 
-cwt_float_t CMorlet::reT(cwt_float_t t) const
+cwt_float_t ComplexMorlet::reT(cwt_float_t t) const
 {
-    return _c * exp(-(t*t) / _fb) * cos(PI2 * _fc * t);
+    return _c * exp(-(t*t) / _fb) * cos(CWT_2PI * _fc * t);
 }
 
-cwt_float_t CMorlet::imT(cwt_float_t t) const
+cwt_float_t ComplexMorlet::imT(cwt_float_t t) const
 {
-    return _c * exp(-(t*t) / _fb) * sin(PI2 * _fc * t);
+    return _c * exp(-(t*t) / _fb) * sin(CWT_2PI * _fc * t);
 }
 
-cwt_float_t CMorlet::reF(cwt_float_t w) const
+cwt_float_t ComplexMorlet::reF(cwt_float_t w) const
 {
     cwt_float_t br;
 
-    br = (w - PI2 * _fc);
+    br = (w - CWT_2PI * _fc);
     return exp(-_fb * br * br / 4.0);
 }
 
-cwt_float_t CMorlet::imF(cwt_float_t w) const
+cwt_float_t ComplexMorlet::imF(cwt_float_t w) const
 {
     return 0.0;
 }
 
-cwt_float_t CMorlet::fBand() const
+cwt_float_t ComplexMorlet::fBand() const
 {
     return _fb;
 }
 
-cwt_float_t CMorlet::cFreq() const
+cwt_float_t ComplexMorlet::cFreq() const
 {
     return _fc;
 }
 
-cwt_float_t CMorlet::effL() const
+cwt_float_t ComplexMorlet::effL() const
 {
     return _effl;
 }
 
-cwt_float_t CMorlet::effR() const
+cwt_float_t ComplexMorlet::effR() const
 {
     return _effr;
 }
 
-Wavelet* CMorlet::clone() const
+Wavelet* ComplexMorlet::clone() const
 {
-    return new CMorlet(*this);
+    return new ComplexMorlet(*this);
 }
 
 

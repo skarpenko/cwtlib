@@ -1,0 +1,16 @@
+Compilation Instructions
+========================
+
+The simplest way to compile this package is:
+
+  1. `cd' to the directory containing the package's source code and type
+     `make' to compile the package.
+
+  2. To build documentation files type `make doc'.
+
+  3. Optionally, type `make test' to run any self-tests that come with
+     the package.
+
+  4. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'. Also files that
+     created by `make test' will be removed.

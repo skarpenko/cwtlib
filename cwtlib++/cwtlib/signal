@@ -46,11 +46,11 @@ class Signal {
     // Constructor of Signal object.
     //
     // Parameters:
-    //   Length  - signal length;
-    //   Real    - real part;
-    //   Imag    - imaginary part;
-    //   Fs      - sampling frequency;
-    //   Name    - signal name.
+    //   Length  -  signal length;
+    //   Real    -  real part;
+    //   Imag    -  imaginary part;
+    //   Fs      -  sampling frequency;
+    //   Name    -  signal name.
     Signal(cwt_uint_t Length, const cwt_float_t *Real = NULL,
            const cwt_float_t *Imag = NULL, cwt_float_t Fs = 1.0,
            const string& Name = "");
@@ -79,11 +79,11 @@ class Signal {
 
     // get magnitude for given index of a sample
     cwt_float_t mag(cwt_uint_t i) const throw(out_of_range);
-    // get magnitude for given index of a sample
+    // get magnitude for given time position of a sample
     cwt_float_t mag(cwt_float_t t) const throw(out_of_range);
     // get angle for given index of a sample
     cwt_float_t ang(cwt_uint_t i) const throw(out_of_range);
-    // get angle for given index of a sample
+    // get angle for given time position of a sample
     cwt_float_t ang(cwt_float_t t) const throw(out_of_range);
 
     // signal length in samples
@@ -95,11 +95,11 @@ class Signal {
     const string& getName() const;
     void setName(const string& Name);
 
-    // get/set sampling frequency
+    // get/set signal sampling frequency
     cwt_float_t getFs() const;
     void setFs(cwt_float_t Fs);
 
-    // get/set time step value
+    // get/set sampling time step value
     // (the same as sampling frequency)
     cwt_float_t getDt() const;
     void setDt(cwt_float_t Dt);

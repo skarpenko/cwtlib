@@ -1,6 +1,25 @@
-/***********************************************************************
-                      Continuous Wavelet Transform
+/*
+ *   Continuous Wavelet Transform Library
+ *   Copyright (C) 2004 Stepan V.Karpenko
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Lesser General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2.1 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this library; if not, write to the
+ *   Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ *   Boston, MA  02111-1307  USA
+ */
 
+/***********************************************************************
+ Title   : Continuous Wavelet Transform Routines
  Author  : Stepan V.Karpenko
  Date    : 01-04-2004
  Comments:
@@ -14,6 +33,8 @@
     Added vector allocation routines.
    31-05-2004 Stepan V.Karpenko
     Added two optimized versions of cwt().
+   08-10-2004 Stepan V.Karpenko
+    Added cwto3() and copy_cwt().
 ***********************************************************************/
 
 #include <math.h>
@@ -172,8 +193,8 @@ int cwto1( double *s, unsigned long n, double amin, double astep, double amax,
            psi = wavelet->real;
         } else {
            psi = wavelet->imag;
-           if(psi == NULL) return 1;
         }
+        if(psi == NULL) return 1;
 
         /* initialize cwt dimension */
         cwt->cols = (unsigned long)( ceil((double)n / bstep) );
@@ -232,14 +253,16 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
            double bstep, unsigned long ivalp, cwtwlet_t *wavelet, long part,
            unsigned long npoints, cwt_t *cwt )
 {
+        /* variables for computing cwt */
         double a, b, i, istep;
         unsigned long dx, dy;
+        psi_t *psi;
+        /* variables for operating with precomputed wavelet */
         double t1, t2;
         double *W;
         double wstep;
         long L, R, j;
         double d, ind;
-        psi_t *psi;
 
         if( (amin > amax) || (amin <= 0.0) || (astep <= 0.0) ||
             (amax <= 0.0) || (bstep <= 0.0) || !ivalp || !npoints )
@@ -250,8 +273,8 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
            psi = wavelet->real;
         } else {
            psi = wavelet->imag;
-           if(psi == NULL) return 1;
         }
+        if(psi == NULL) return 1;
 
         /* initialize cwt dimension */
         cwt->cols = (unsigned long)( ceil((double)n / bstep) );
@@ -262,7 +285,7 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
 
         /* Precompute wavelet values */
         wstep = (double)( (wavelet->esr - wavelet->esl) / npoints );
-        L = wavelet->esl / wstep;  R = wavelet->esr / wstep;
+        L = (long)(wavelet->esl / wstep);  R = (long)(wavelet->esr / wstep);
         W = Vectord(L, R);
         if(!W) {
             free_Matrixd(cwt->cwt, 0, cwt->rows-1, 0, cwt->cols-1);
@@ -305,6 +328,147 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
         strncpy(cwt->wname, wavelet->wname, WNAMELEN); /* Store wavelet name */
 
         return 0;
+}
+
+/*
+      Perform continuous wavelet transform. (optimized version 3)
+      s - source signal of length n;
+      amin, astep, amax - Minimum scale, step and maximum scale;
+      bstep - Wavelet translation step size;
+      ivalp - used for increasing discretization in ivalp times, by
+              inserting additional samples. This parameter affects
+              precision;
+      wavelet - Wavelet;
+      part - Wavelet part (REAL/IMAG);
+      npoints - Points number for wavelet precompution
+                (greater value - higher precision);
+      cwt - result;
+
+      Returns 0 on success and 1 on error.
+*/
+int cwto3( double *s, unsigned long n, double amin, double astep, double amax,
+           double bstep, unsigned long ivalp, cwtwlet_t *wavelet, long part,
+           unsigned long npoints, cwt_t *cwt )
+{
+        /* variables for computing cwt */
+        double a, b, i, istep;
+        unsigned long dx, dy;
+        psi_t *psi;
+        /* variables for operating with precomputed wavelet */
+        double t1, t2;
+        double *W;
+        double wstep;
+        long L, R, j;
+        double d, ind;
+        /* precomputed values */
+        double ivlp_amin, a_esl, a_esr;
+
+
+        if( (amin > amax) || (amin <= 0.0) || (astep <= 0.0) ||
+            (amax <= 0.0) || (bstep <= 0.0) || !ivalp || !npoints )
+                return 1;
+
+        /* Select part of wavelet (real/imaginary) */
+        if(part == REAL) {
+           psi = wavelet->real;
+        } else {
+           psi = wavelet->imag;
+        }
+        if(psi == NULL) return 1;
+
+        /* initialize cwt dimension */
+        cwt->cols = (unsigned long)( ceil((double)n / bstep) );
+        cwt->rows = (unsigned long)((amax - amin)/astep + 1.0);
+
+        cwt->cwt = Matrixd(0, cwt->rows-1, 0, cwt->cols-1);
+        if(!cwt->cwt) return 1;
+
+        /* Precompute wavelet values */
+        wstep = (double)( (wavelet->esr - wavelet->esl) / npoints );
+        L = (long)(wavelet->esl / wstep);  R = (long)(wavelet->esr / wstep);
+        W = Vectord(L, R);
+        if(!W) {
+            free_Matrixd(cwt->cwt, 0, cwt->rows-1, 0, cwt->cols-1);
+            cwt->cwt = NULL;
+            return 1;
+        }
+        for(j=L, i=wavelet->esl; j<=R; j++, i+=wstep)
+             W[j] = psi(i, 1.0, 0.0);
+        d = (double)( (R - L) / (wavelet->esr - wavelet->esl) );
+
+        istep = 1.0 / (double)ivalp;
+        ivlp_amin = (double)ivalp * amin;
+        /* Scales */
+        for (dy = 0, a = amin; dy < cwt->rows; dy++, a+=astep)
+        {
+            /* calculate ivalp for next a */
+            if(dy && ivalp != 1) {
+                ivalp = (unsigned long)ceil( ivlp_amin / a );
+                istep = 1.0 / (double)ivalp;
+            }
+            /* small precompution */
+            a_esl = a*wavelet->esl; a_esr = a*wavelet->esr;
+
+            /* Translations */
+            for ( dx = 0, b = 0.0; dx < cwt->cols; dx++, b+=bstep)
+            {
+                /* Compute wavelet boundaries */
+                t1 = a_esl + b;    t2 = a_esr + b;
+                if(t1<0.0) t1=0.0; if(t2>=n) t2=(n-1);
+
+                /* Perform convolution */
+                cwt->cwt[dy][dx] = 0.0;
+                for (i=t1, j=0; i <= t2; i+=istep,j++) {
+                    ind = d*(i-b)/a;
+                    cwt->cwt[dy][dx] += s[(unsigned long)i] * W[(long)ind];
+                }
+                cwt->cwt[dy][dx] *= 1/(sqrt(a) * (double)ivalp);
+            }
+        }
+        /* Free allocated memory */
+        free_Vectord(W, L, R);
+
+        /* store transform info */
+        cwt->amin = amin;
+        cwt->astep = astep;
+        cwt->amax = a - astep; /* Last processed scale */
+        cwt->bstep = bstep;
+        cwt->siglen = n;
+        strncpy(cwt->wname, wavelet->wname, WNAMELEN); /* Store wavelet name */
+
+        return 0;
+}
+
+/*
+    Copies one cwt structure to another
+    (NOTE: dst must be empty or memory leak will occur)
+
+    Returns 0 on success and 1 on error.
+*/
+int copy_cwt(cwt_t *src, cwt_t *dst)
+{
+        unsigned long dx,dy;
+
+        /* allocate new area*/
+        dst->cwt = Matrixd(0, src->rows-1, 0, src->cols-1);
+        if(!dst->cwt) return 1;
+
+        /* copy cwt params */
+        dst->cols   = src->cols;
+        dst->rows   = src->rows;
+        dst->amin   = src->amin;
+        dst->astep  = src->astep;
+        dst->amax   = src->amax;
+        dst->bstep  = src->bstep;
+        dst->siglen = src->siglen;
+        strncpy(dst->wname, src->wname, WNAMELEN);
+
+        /* copy cwt values */
+        for (dy = 0; dy < dst->rows; dy++)
+            for ( dx = 0; dx < dst->cols; dx++)
+                dst->cwt[dy][dx] = src->cwt[dy][dx];
+
+	return 0;
 }
 
 /*

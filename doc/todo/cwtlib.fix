@@ -1,0 +1,24 @@
+- Make routine interface standartization (if possible)
+- routine for computing cone of influence ?
+- Add functions for scale changing during transform
+  (main is log scale change)
+- Add Inverse Transform ?
+- in fft(): "fft {" -> "fft _newline_ {"
+- add cwtwlet_t* wltlocate(char *wname, cwtwlets_t* (or NULL for cwtwlets[]))
+- bug in Shannon wavelet (see bug_14122005) (add this to comment).
+  Also check other wavelets. Check eShannon wavelet and recompute
+  C (L2 norm) for new Fc and Fb of Shannon and eShannon.
+
+
+done(1.5) - Add Fourier version of transform ?
+done(1.4)(expt nonregular wavelets) - See BUG30072005
+done(1.4) - Make interface of cwt() the same as others with support of wavelet names.
+done(1.4) - Add more Gaussian derivatives? (using Maple)
+done(1.4) - Link WAVE for GAUSS1
+done(1.4) - Check L2 norms for Gaussians
+done(1.4) - Add complex Gaussians ?
+done(1.4) - Add testcase (sine, delta, freq modulated signal)
+done(1.4) - May be "Incorrect sign" bug, when IMAG specified (see Foster) ?
+            Also see complex conjunction in Guide to DSP (Ch.30 Complex numbers).
+done(1.3) - Add -O2 in makefile. That helps against rounding bug in GCC and some
+            others (see description of BUG21122004).

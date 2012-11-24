@@ -1,0 +1,14 @@
+enum { errors }
+
+int cwt();
+cwtctl(int REQUEST, ...);
+cwtfree(wt);
+cwtcopy(swt, dwt);
+
+cwt_t:
+ - Add routine name (used for compution).
+ - Cmplx nums still be splitted. 'Cause it's handy.
+
+REQUESTS:
+ - SET_INPUT (SET_SIGNAL / CWT_SIGNAL / CWT_INPUT)
+ - SET_AMIN, SET_AMAX, SET_ASTP, SET_BSTP

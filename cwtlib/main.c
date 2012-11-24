@@ -2,7 +2,7 @@
  *   main.c - Continuous Wavelet Transform Demo Program
  *
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
+ *   Copyright (C) 2004-2009 Stepan V.Karpenko <carp@mail.ru>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public

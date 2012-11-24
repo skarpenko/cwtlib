@@ -1,5 +1,5 @@
 #    Continuous Wavelet Transform Library
-#    Copyright (C) 2005 Stepan V.Karpenko
+#    Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
 #
 #    This library is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Lesser General Public
@@ -40,5 +40,5 @@ test: cwt testcase/sine.txt testcase/delta.txt testcase/freqmod.txt
 # Remove results of compilation and self-tests execution
 clean:
 	rm *.o
-	rm wt_*.txt
 	rm cwt
+	rm wt_*.txt

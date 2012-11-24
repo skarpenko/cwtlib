@@ -1,6 +1,8 @@
 /*
+ *   main.c - Continuous Wavelet Transform Demo Program
+ *
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2005 Stepan V.Karpenko
+ *   Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -18,21 +20,6 @@
  *   Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
- Title   : Continuous Wavelet Transform Demo Program
- Author  : Stepan V.Karpenko
- Date    : 01-04-2004
- Comments:
- History :
-   31-05-2004 Stepan V.Karpenko
-    Added support for optimized versions of cwt().
-   08-10-2004 Stepan V.Karpenko
-    CLK_TCK replaced with CLOCKS_PER_SEC.
-    Added support for cwto3().
-   11-08-2005 Stepan V.Karpenko
-    Added support for new interface of initial version cwt() routine.
-    Now is possible to select output file.
-***********************************************************************/
 
 #include <math.h>
 #include <stdio.h>
@@ -45,6 +32,7 @@
 /** #define OPT1 **/  /* Optimized version 1 */
 /** #define OPT2 **/  /* Optimized version 2 */
 #define OPT3          /* Optimized version 3 */
+/** #define FFT **/   /* FFT based version */
 
 #if defined(OPT2) || defined(OPT3)
   #define NPOINTS 60000 /* Points number for wavelet precompution */
@@ -52,7 +40,7 @@
 
 
 #define WAVELET cwtwlets[MEXHAT]
-#define PART REAL /* Complex part of wavelet */
+#define PART REAL /* Complex part of the transform to compute and save */
 #define AMIN 1    /* A min  */
 #define ASTP 1    /* A step */
 #define AMAX 128  /* A max  */
@@ -103,6 +91,9 @@ int main(int argc, char *argv[])
     #ifdef OPT3
      if( cwto3(s, N, AMIN, ASTP, AMAX, BSTP, PREC, &WAVELET, PART, NPOINTS, &wt) )
     #endif
+    #ifdef FFT
+     if( cwtft(s, NULL, N, AMIN, ASTP, AMAX, &WAVELET, (PART==REAL)?&wt:NULL, (PART==IMAG)?&wt:NULL) )
+    #endif
      {
          printf("error performing wavelet transform!\n");
          return 1;
@@ -113,10 +104,7 @@ int main(int argc, char *argv[])
         wt.amin, wt.astep, wt.amax);
      printf("Bstep\t\t= %f\nSignal length\t= %u\n", wt.bstep, wt.siglen);
      printf("CWT array dimensions: %ux%u\n", wt.rows, wt.cols);
-     printf("Wavelet: %s", wt.wname);
-     if(wt.i == REAL) printf(" (real part)");
-     if(wt.i == IMAG) printf(" (imaginary part)");
-     printf("\n");
+     printf("Wavelet: %s\n", wt.wname);
     #ifdef NOOPT
      printf("Routine used: cwt()\n");
     #endif
@@ -129,9 +117,12 @@ int main(int argc, char *argv[])
     #ifdef OPT3
      printf("Routine used: cwto3()\n");
     #endif
+    #ifdef FFT
+     printf("Routine used: cwtft()\n");
+    #endif
      printf("\n");
 
-     printf("Storing transform data.\n");
+     printf("Saving %s part of the transform.\n", (wt.i==REAL) ? "real" : "imaginary");
      for(i=0; i<wt.rows; i++) {
         for(j=0; j<wt.cols; j++) {
             fprintf(fh, " % .15f", wt.cwt[i][j]);

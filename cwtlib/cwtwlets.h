@@ -1,6 +1,8 @@
 /*
+ *   cwtwlets.h - Wavelets for Continuous Wavelet Transform
+ *
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2005 Stepan V.Karpenko
+ *   Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -18,35 +20,6 @@
  *   Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
- Title   : Wavelet Functions for Continuous Wavelet Transform
- Author  : Stepan V.Karpenko
- Date    : 01-04-2004
- Comments:
- History :
-   09-04-2004 Stepan V.Karpenko
-    Added cwtwlets[] array and cwtwlet_t type.
-   30-05-2004 Stepan V.Karpenko
-    Added entries for effective support boundaries.
-   31-05-2004 Stepan V.Karpenko
-    Added Gauss1 and Gauss2 (link to MexHat).
-   13-10-2004 Stepan V.Karpenko
-    Added Haar and French Hat.
-   11-08-2005 Stepan V.Karpenko
-    Added Wave (link to Gauss1).
-   12-08-2005 Stepan V.Karpenko
-    Added Gauss2 - Gauss10. Gauss2 now is not a link to MexHat.
-   14-08-2005 Stepan V.Karpenko
-    Added complex Gauss1 - Gauss10.
-    Added complex Morlet (CMORLET). MORLET is now real-valued wavelet.
-   15-08-2005 Stepan V.Karpenko
-    Added complex Shannon wavelet and real-valued Poisson wavelet.
-   16-08-2005 Stepan V.Karpenko
-    Added Paul1 - Paul5 wavelets.
-   22-08-2005 Stepan V.Karpenko
-    Added real-valued Splash wavelet and complex Shannon wavelet with
-    exponential decay.
-***********************************************************************/
 
 #ifndef _CWTWLETS_H_
 #define _CWTWLETS_H_
@@ -56,7 +29,7 @@
 #ifndef PI
   #define PI  3.14159265358979323846
 #endif
-#define TINY 1E-20
+#define TINY 1E-200
 #define WNAMELEN 10
 
 /* Wavelet function */
@@ -66,15 +39,17 @@ typedef double (psi_t)(double, double, double);
 typedef struct {
         char wname[WNAMELEN];  /* Wavelet name */
         double esl, esr;       /* Effective support boundaries */
-        psi_t *real;           /* Real part */
-        psi_t *imag;           /* Imaginary part, if not exist must be NULL */
+        psi_t *real;           /* Real part in time domain */
+        psi_t *imag;           /* Imaginary part in time domain */
+        psi_t *realft;         /* Real part in frequency domain */
+        psi_t *imagft;         /* Imaginary part in frequency domain */
 } cwtwlet_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Complex parts of wavelet */
+/* Complex parts */
 enum { REAL, IMAG };
 
 /* Enumeration of wavelet entries */

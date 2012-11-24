@@ -1,6 +1,8 @@
 /*
+ *   cwt.h - Continuous Wavelet Transform Routines
+ *
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2005 Stepan V.Karpenko
+ *   Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -18,21 +20,6 @@
  *   Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
- Title   : Continuous Wavelet Transform Routines
- Author  : Stepan V.Karpenko
- Date    : 01-04-2004
- Comments:
- History :
-   31-05-2004 Stepan V.Karpenko
-    Added two optimized versions of cwt().
-   08-10-2004 Stepan V.Karpenko
-    Added cwto3() and copy_cwt().
-   11-08-2005 Stepan V.Karpenko
-    New interface of initial version cwt() routine.
-   14-08-2005 Stepan V.Karpenko
-    "i" field inserted to cwt_t, that indicates complex part of WT.
-***********************************************************************/
 
 #ifndef _CWT_H_
 #define _CWT_H_
@@ -130,6 +117,21 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
 int cwto3( double *s, unsigned long n, double amin, double astep, double amax,
            double bstep, unsigned long ivalp, cwtwlet_t *wavelet, long part,
            unsigned long npoints, cwt_t *cwt );
+
+/*
+      Perform continuous wavelet transform. (FFT based version)
+      s_re, s_im - complex signal of length n (n must be an integer power of 2).
+                   s_re or s_im may be NULL if not needed;
+      amin, astep, amax - Minimum scale, step and maximum scale;
+      wavelet - Wavelet;
+      cwt_re - real part of result (may be NULL if not needed);
+      cwt_im - imaginary part of result (may be NULL if not needed);
+
+      Returns 0 on success and 1 on error.
+*/
+int cwtft( double *s_re, double *s_im, unsigned long n, double amin,
+           double astep, double amax, cwtwlet_t *wavelet,
+           cwt_t *cwt_re, cwt_t *cwt_im );
 
 /*
     Copies one cwt structure to another

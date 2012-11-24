@@ -1,6 +1,8 @@
 /*
+ *   cwt.c - Continuous Wavelet Transform Routines
+ *
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2005 Stepan V.Karpenko
+ *   Copyright (C) 2005 Stepan V.Karpenko <carp@mail.ru>
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -18,35 +20,6 @@
  *   Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
- Title   : Continuous Wavelet Transform Routines
- Author  : Stepan V.Karpenko
- Date    : 01-04-2004
- Comments:
- History :
-   07-04-2004 Stepan V.Karpenko
-    Added minor precautions against possible bugs and incompatibility
-    in compilers.
-    Now actual maximum scale stores in cwt structure.
-   30-05-2004 Stepan V.Karpenko
-    Minor bug fix in cwt(). ("i<n" replaced with "i<=n-1")
-    Added vector allocation routines.
-   31-05-2004 Stepan V.Karpenko
-    Added two optimized versions of cwt().
-   08-10-2004 Stepan V.Karpenko
-    Added cwto3() and copy_cwt().
-   11-08-2005 Stepan V.Karpenko
-    New interface of initial version cwt() routine.
-    Sign of imaginary part is now correct.
-    Fixed bug that affects precision in cwto2() and cwto3()
-    (now R-L always equal npoints).
-    Removed detailed header comments of routines to avoid possible
-    differences.
-   14-08-2005 Stepan V.Karpenko
-    Support for "i" field in cwt_t.
-   27-08-2005 Stepan V.Karpenko
-    Precautions against incorrect rounding when computing cwt->rows.
-***********************************************************************/
 
 #include <math.h>
 #include <stdlib.h>
@@ -110,6 +83,52 @@ static void free_Matrixd(double **m, long nrl, long nrh, long ncl, long nch)
 {
         free((FREE_ARG) (m[nrl]+ncl-NR_END));
         free((FREE_ARG) (m+nrl-NR_END));
+}
+
+/* compute fast Fourier transform */
+static void fft(double *re, double *im, unsigned long n, int isign) {
+        unsigned long i, j, k, l, le, le1, ip, n2;
+        double wpr, wpi, wr, wi, wtr, wti;
+
+        n2 = n>>1;
+        j = 1;
+        for(i=0; i<n-1; i++) {
+            if(i<j) {
+               wtr     = re[j-1];
+               wti     = im[j-1];
+               re[j-1] = re[i];
+               im[j-1] = im[i];
+               re[i]   = wtr;
+               im[i]   = wti;
+            }
+            k = n2;
+            while(k<j) {
+                j -= k;
+                k >>= 1;
+            }
+            j += k;
+        }
+        l=1;
+        k=n;
+        while(k>>=1) {
+            le1 = (le=1<<l++) >> 1;
+            wtr = PI / (double)le1;
+            wpr = cos(wtr); wpi = -isign*sin(wtr);
+            wr = 1.0;       wi = 0.0;
+            for(j=0; j<le1; j++) {
+                for(i=j; i<n; i+=le) {
+                    ip = i + le1;
+                    wtr    = wr*re[ip] - wi*im[ip];
+                    wti    = wi*re[ip] + wr*im[ip];
+                    re[ip] = re[i] - wtr;
+                    im[ip] = im[i] - wti;
+                    re[i]  = re[i] + wtr;
+                    im[i]  = im[i] + wti;
+                }
+                wr = (wtr=wr)*wpr - wi*wpi;
+                wi = wi*wpr + wtr*wpi;
+            }
+        }
 }
 
 
@@ -425,6 +444,167 @@ int cwto3( double *s, unsigned long n, double amin, double astep, double amax,
         cwt->siglen = n;
         strncpy(cwt->wname, wavelet->wname, WNAMELEN); /* Store wavelet name */
         cwt->i = part; /* Complex part info */
+
+        return 0;
+}
+
+/*
+      Perform continuous wavelet transform. (FFT based version)
+*/
+int cwtft( double *s_re, double *s_im, unsigned long n, double amin,
+           double astep, double amax, cwtwlet_t *wavelet,
+           cwt_t *cwt_re, cwt_t *cwt_im )
+{
+        /* variables for computing cwt */
+        double a;
+        unsigned long dx, dy;
+        unsigned long rows, cols;
+        double *f_re, *f_im;
+        double *r_re, *r_im;
+        /* variables for wavelet computation */
+        double w, W_re, W_im;
+        psi_t *Psi_re, *Psi_im;
+        /* precomputed values */
+        double sqrt_a_n;
+        double twoPIn = 2.0 * PI / (double)n;
+
+        /* check that n is an integer power of two */
+        dx=n; while(dx!=1) { if( dx&1 && dx>1 ) return 1; dx>>=1; }
+
+        if( (amin > amax) || (amin <= 0.0) || (astep <= 0.0) ||
+            (amax <= 0.0) || (!cwt_re && !cwt_im) )
+                return 1;
+
+        /* init pointers to wavelet in frequency domain */
+        Psi_re = wavelet->realft;
+        Psi_im = wavelet->imagft;
+        if(!Psi_re && !Psi_im) return 1;
+
+        /* allocate memory for source signal */
+        f_re = Vectord(0, n-1);
+        if(!f_re) return 1;
+        f_im = Vectord(0, n-1);
+        if(!f_im) {
+            free_Vectord(f_re, 0, n-1);
+            return 1;
+        }
+
+        /* initialize cwt dimensions */
+        cols = n;
+        rows = (unsigned long)floor( (amax - amin) / astep ) + 1;
+
+        /* allocate memory for transform */
+        r_re = NULL; r_im = NULL;
+        if(cwt_re) {
+            cwt_re->cols = cols;
+            cwt_re->rows = rows;
+            cwt_re->cwt = Matrixd(0, rows-1, 0, cols-1);
+            if(cwt_re->cwt) r_re++; /* now r_re is not NULL */
+         } else
+            r_re = Vectord(0, cols-1);
+
+         if(cwt_im) {
+             cwt_im->cols = cols;
+             cwt_im->rows = rows;
+             cwt_im->cwt = Matrixd(0, rows-1, 0, cols-1);
+             if(cwt_im->cwt) r_im++; /* now r_im is not NULL */
+        } else
+            r_im = Vectord(0, cols-1);
+
+        /* check for memory allocation errors (r_re or r_im = NULL) */
+        if(!r_re || !r_im) {
+            free_Vectord(f_re, 0, n-1);
+            free_Vectord(f_im, 0, n-1);
+
+            if(cwt_re) {
+               if(cwt_re->cwt) {
+                   free_Matrixd(cwt_re->cwt, 0, rows-1, 0, cols-1);
+                   cwt_re->cwt = NULL;
+               }
+            } else
+               if(r_re) free_Vectord(r_re, 0, cols-1);
+
+            if(cwt_im) {
+               if(cwt_im->cwt) {
+                   free_Matrixd(cwt_im->cwt, 0, rows-1, 0, cols-1);
+                   cwt_im->cwt = NULL;
+               }
+            } else
+               if(r_im) free_Vectord(r_im, 0, cols-1);
+
+            return 1;
+        }
+
+        /* copy source signal */
+        for (dx = 0; dx < n; dx++) {
+            if(s_re) f_re[dx] = s_re[dx]; else f_re[dx] = 0.0;
+            if(s_im) f_im[dx] = s_im[dx]; else f_im[dx] = 0.0;
+        }
+
+        /* forward Fourier transform */
+        fft(f_re, f_im, n, 1);
+
+        /* Scales */
+        for (dy = 0, a = amin; dy < rows; dy++, a+=astep)
+        {
+            sqrt_a_n = sqrt(a) / (double)n; /* precompution */
+
+            /* set pointers to transform result */
+            if(cwt_re) r_re = cwt_re->cwt[dy];
+            if(cwt_im) r_im = cwt_im->cwt[dy];
+
+            /* Convolute */
+            for (dx = 0; dx < cols; dx++)
+            {
+                /* calculate wave number w */
+                if(dx<=n>>1)
+                  w = twoPIn * (double)dx;
+                else
+                  w =-twoPIn * (double)(n-dx);
+
+                /* calculate wavelet */
+                if(!Psi_re) W_re = 0.0;
+                else W_re = sqrt_a_n * Psi_re(w, a, 0.0);
+                if(!Psi_im) W_im = 0.0;
+                else W_im = sqrt_a_n * Psi_im(w, a, 0.0);
+
+                /* compute result */
+                r_re[dx] = f_re[dx] * W_re + f_im[dx] * W_im;
+                r_im[dx] = f_im[dx] * W_re - f_re[dx] * W_im;
+            }
+            /* inverse Fourier transform */
+            fft(r_re, r_im, n, -1);
+        }
+
+        /* store transform info */
+        /* real part */
+        if(cwt_re) {
+            cwt_re->amin = amin;
+            cwt_re->astep = astep;
+            cwt_re->amax = a - astep; /* Last processed scale */
+            cwt_re->bstep = 1.0;
+            cwt_re->siglen = n;
+            strncpy(cwt_re->wname, wavelet->wname, WNAMELEN);
+            cwt_re->i = REAL;
+        }
+        /* imaginary part */
+        if(cwt_im) {
+            cwt_im->amin = amin;
+            cwt_im->astep = astep;
+            cwt_im->amax = a - astep;
+            cwt_im->bstep = 1.0;
+            cwt_im->siglen = n;
+            strncpy(cwt_im->wname, wavelet->wname, WNAMELEN);
+            cwt_im->i = IMAG;
+        }
+
+        /* Free allocated memory */
+        free_Vectord(f_re, 0, n-1);
+        free_Vectord(f_im, 0, n-1);
+        if(!cwt_re)
+            free_Vectord(r_re, 0, cols-1);
+        if(!cwt_im)
+            free_Vectord(r_im, 0, cols-1);
 
         return 0;
 }

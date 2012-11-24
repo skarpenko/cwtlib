@@ -86,7 +86,8 @@ static void free_Matrixd(double **m, long nrl, long nrh, long ncl, long nch)
 }
 
 /* compute fast Fourier transform */
-static void fft(double *re, double *im, unsigned long n, int isign) {
+static void fft(double *re, double *im, unsigned long n, int isign)
+{
         unsigned long i, j, k, l, le, le1, ip, n2;
         double wpr, wpi, wr, wi, wtr, wti;
 

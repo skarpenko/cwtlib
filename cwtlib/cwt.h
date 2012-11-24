@@ -1,6 +1,6 @@
 /*
  *   Continuous Wavelet Transform Library
- *   Copyright (C) 2004 Stepan V.Karpenko
+ *   Copyright (C) 2005 Stepan V.Karpenko
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,10 @@
     Added two optimized versions of cwt().
    08-10-2004 Stepan V.Karpenko
     Added cwto3() and copy_cwt().
+   11-08-2005 Stepan V.Karpenko
+    New interface of initial version cwt() routine.
+   14-08-2005 Stepan V.Karpenko
+    "i" field inserted to cwt_t, that indicates complex part of WT.
 ***********************************************************************/
 
 #ifndef _CWT_H_
@@ -39,10 +43,11 @@
 /* CWT structure */
 typedef struct {
         char wname[WNAMELEN];      /* Wavelet name */
+        long i;                    /* Complex part (REAL/IMAG) */
         double amin, astep, amax;  /* Minimum and maximum scale */
         double bstep;              /* Step of wavelet translation */
         unsigned long siglen;      /* Signal length */
-        unsigned long rows, cols;  /* Dimension of cwt */
+        unsigned long rows, cols;  /* Dimensions of cwt */
         double **cwt;              /* Wavelet coefficients */
 } cwt_t;
 
@@ -51,20 +56,22 @@ extern "C" {
 #endif
 
 /*
-      Perform continuous wavelet transform.
+      Perform continuous wavelet transform. (Initial version)
       s - source signal of length n;
       amin, astep, amax - Minimum scale, step and maximum scale;
       bstep - Wavelet translation step size;
       ivalp - used for increasing discretization in ivalp times, by
               inserting additional samples. This parameter affects
               precision;
-      psi - Wavelet function;
+      wavelet - Wavelet;
+      part - Complex part of wavelet (REAL/IMAG);
       cwt - result;
 
       Returns 0 on success and 1 on error.
 */
 int cwt( double *s, unsigned long n, double amin, double astep, double amax,
-         double bstep, unsigned long ivalp, psi_t *psi, cwt_t *cwt );
+         double bstep, unsigned long ivalp, cwtwlet_t *wavelet, long part,
+         cwt_t *cwt );
 
 /*
       Perform continuous wavelet transform. (optimized version 1)
@@ -75,7 +82,7 @@ int cwt( double *s, unsigned long n, double amin, double astep, double amax,
               inserting additional samples. This parameter affects
               precision;
       wavelet - Wavelet;
-      part - Wavelet part (REAL/IMAG);
+      part - Complex part of wavelet (REAL/IMAG);
       cwt - result;
 
       Returns 0 on success and 1 on error.
@@ -93,7 +100,7 @@ int cwto1( double *s, unsigned long n, double amin, double astep, double amax,
               inserting additional samples. This parameter affects
               precision;
       wavelet - Wavelet;
-      part - Wavelet part (REAL/IMAG);
+      part - Complex part of wavelet (REAL/IMAG);
       npoints - Points number for wavelet precompution
                 (greater value - higher precision);
       cwt - result;
@@ -113,7 +120,7 @@ int cwto2( double *s, unsigned long n, double amin, double astep, double amax,
               inserting additional samples. This parameter affects
               precision;
       wavelet - Wavelet;
-      part - Wavelet part (REAL/IMAG);
+      part - Complex part of wavelet (REAL/IMAG);
       npoints - Points number for wavelet precompution
                 (greater value - higher precision);
       cwt - result;

@@ -1,0 +1,16 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 
+0 0 1 2 2 2 2 2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 17 "restart; # Splash" }
+}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "Fb:=1; # bandwidth" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 48 "y:=t*exp(-abs(t)/Fb); c:=sqr
+t(2/Fb^3); evalf(%);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "plo
+t(y, t=-10..10);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 61 "C:=1/((
+int(y*y, t=-infinity..infinity))^(1/2)); Cv:=evalf(C);" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 34 "W:=C*y; simplify(%): Wv:=evalf(%);
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "plot(W, t=-10..10);" }}
+}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 35 "E:=int(W^2, t=-infinity..in
+finity);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 33 "M:=int(W, t=-in
+finity..infinity);" }}}}{MARK "9" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 
+}{PAGENUMBERS 0 1 2 33 1 1 }

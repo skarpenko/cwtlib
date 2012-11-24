@@ -1,0 +1,2 @@
+Visible edges between scales when WT performed with cwto3() and Astep<=0.01
+

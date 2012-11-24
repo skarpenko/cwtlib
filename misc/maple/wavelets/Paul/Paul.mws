@@ -1,0 +1,17 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 34 "restart; # Paul wave
+let of order m" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 5 "m:=1;" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 48 "Pl:=2^m*I^m*m!*(1-I*t)^(-(m+
+1))/sqrt(Pi*(2*m)!);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 32 "plo
+t([Re(Pl), Im(Pl)], t=-5..5);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 65 "# C:=1/((int(Pl*Pl, t=-infinity..infinity))^(1/2)); Cv:=evalc(C)
+;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 37 "# W:=C*Pl; simplify(%)
+: Wv:=evalf(%);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 32 "# plot([
+Re(W), Im(W)], t=-5..5);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 36 
+"E:=int(Pl^2, t=-infinity..infinity);" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 17 "Cgd:=evalc(c*Pl);" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}}{MARK "0 0 0" 9 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 
+1 }{PAGENUMBERS 0 1 2 33 1 1 }

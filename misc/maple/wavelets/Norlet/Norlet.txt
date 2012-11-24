@@ -1,0 +1,3 @@
+c:=sqrt(2*Pi): w:=2*Pi*2:
+psi:=c*x*exp(-x^2) * (cos(w*x) + I*sin(w*x));
+

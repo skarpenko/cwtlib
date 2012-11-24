@@ -1,0 +1,12 @@
+! with given main.c (cwtmod) on scales 16 or 17 exist some problems.
+  On this scales exists strange, very big values.
+
+- May be problem is with mapping to wavelet table values.
+
+? Also discovered edges when precision switches (in cwto3).
+
+------------------------
+Bug in CWTMod! caused by killed 1.0 when computing rows num!!!
+
+
+- Add choosable precision (float_t = float/double) ??

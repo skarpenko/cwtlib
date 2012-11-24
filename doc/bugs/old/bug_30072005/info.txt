@@ -1,0 +1,21 @@
+In cwt2 family routines.
+------------------------
+
+R-L sometimes is not equal to npoints.
+May be it depends on rounding.
+
+-------------------------
+Possible solution.
+
+round ESL/wstep down (floor), when computing L. And ESR/wstep round up (ceil).
+
+---------------------------
+This bug affects presision.
+
+----------------------------
+Additional info.
+Wavelets like HAAR and FRHAT has strange error function, that depends on
+npoints and wavelet boundaries.
+
+NOTE: May be cwt() is not so precisely for these kind of wavelets.
+It's because edges of this wavelets floats on different time steps.

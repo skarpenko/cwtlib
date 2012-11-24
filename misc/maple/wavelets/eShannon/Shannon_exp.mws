@@ -1,0 +1,19 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 
+0 0 1 2 2 2 2 2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 50 "# A complex Shannon \+
+wavelet with exponential decay" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "re
+start;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 57 "Fb:=1.5; Fc:=1;  \+
+# bandwidth and wavelet center frequency" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 40 "sinc:=(t)->sin(Pi*t)/(Pi*t*exp(abs(t)));" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 43 "shan:=(Fb^0.5)*sinc(Fb*t)*exp(2*I*P
+i*Fc*t);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 38 "plot([Re(shan),
+ Im(shan)], t=-10..10);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 104 
+"C:=1/((int(shan*shan, t=-infinity..infinity))^(1/2)); Cv:=evalc(C);W:
+=C*shan; simplify(%): Wv:=evalf(%);" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 32 "plot([Re(W), Im(W)], t=-10..10);" }}}{EXCHG {PARA 0 "
+> " 0 "" {MPLTEXT 1 0 35 "E:=int(W^2, t=-infinity..infinity);" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "Cgd:=evalc(c*shan);" }}}}
+{MARK "9" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 
+1 1 }

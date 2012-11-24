@@ -134,7 +134,7 @@ cwt_float_t WTransform::ang(cwt_uint_t row, cwt_uint_t col) const throw(out_of_r
         throw CWTLIB_EXCEPTION_OUT_OF_RANGE();
 
     cwt_uint_t idx = row*_cols + col;
-    return atan( _im[idx] / (_re[idx] + TINY) );
+    return atan2(_im[idx], _re[idx]);
 }
 
 cwt_uint_t WTransform::rows() const

@@ -180,7 +180,7 @@ cwt_float_t Signal::ang(cwt_uint_t i) const throw(out_of_range)
     if (i >= _length)
         throw CWTLIB_EXCEPTION_OUT_OF_RANGE();
 
-    return atan(_im[i] / (_re[i] + TINY));
+    return atan2(_im[i], _re[i]);
 }
 
 cwt_float_t Signal::ang(cwt_float_t t) const throw(out_of_range)
@@ -190,7 +190,7 @@ cwt_float_t Signal::ang(cwt_float_t t) const throw(out_of_range)
     if (i >= _length)
         throw CWTLIB_EXCEPTION_OUT_OF_RANGE();
 
-    return atan(_im[i] / (_re[i] + TINY));
+    return atan2(_im[i], _re[i]);
 }
 
 cwt_uint_t Signal::length() const

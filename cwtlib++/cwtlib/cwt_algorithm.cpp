@@ -243,7 +243,7 @@ WTransform* CWTalgorithm::cwto1(const Signal& s, const RangeFunctor& Scales,
             // Perform convolution
             wt_re[row_dx] = 0.0;
             wt_im[row_dx] = 0.0;
-            for (i = 0.0; i < n; i += istep) {
+            for (i = t1; i <= t2; i += istep) {
                 T = (i - b) / a;
                 wt_re[row_dx] += CMPLX_MUL_RE(s_re[(cwt_uint_t)i], s_im[(cwt_uint_t)i],
                                     MotherWavelet.reT(T), -MotherWavelet.imT(T));
